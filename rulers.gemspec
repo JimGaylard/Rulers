@@ -8,12 +8,14 @@ Gem::Specification.new do |gem|
   gem.version       = Rulers::VERSION
   gem.authors       = ["Jim Gaylard"]
   gem.email         = ["jgaylard75@gmail.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.description   = %q{A Rack-based Web Framework, but with extra awesome}
+  gem.summary       = %q{A Rack-based Web Framework}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
+
+  gem.add_runtime_dependency "rack"
 end
