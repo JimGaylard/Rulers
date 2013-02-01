@@ -16,5 +16,11 @@ module Rulers
       eruby = Erubis::Eruby.new(template)
       eruby.result locals.merge(:env => env)
     end
+
+    def controller_name
+      klass = self.class
+      klass = klass.to_s.gsub(/Controller$/, "")
+      Rulers.to_underscore(klass)
+    end
   end
 end
