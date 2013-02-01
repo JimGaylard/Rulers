@@ -32,6 +32,30 @@ module Rulers
         files = Dir["db/quotes/*.json"]
         files.map { |f| FileModel.new f }
       end
+
+      def self.create(attrs)
+        hash = {}
+        hash["submitter"] = attrs["submitter"] || ""
+        hash["quote"] = attrs["quote"] || ""
+        hash["attribution"] = attrs["attribution"] || ""
+
+        files = Dir["db/quotes/*.json"]
+        basenames = files.map { |f| f.split("/")[-1] }
+        highest = basenames.map { |b| b[0..-6].to_i }.max
+        id = highest + 1
+
+        File.open("db/quotes/#{id}.json", "w") do |f|
+          f.write <<TEMPLATE
+{
+"submitter": "#{hash["submitter"]}",
+"quote": "#{hash["quote"]}",
+"attribution": "#{hash["attribution"]}"
+}
+TEMPLATE
+        end
+
+        FileModel.new "db/quotes/#{id}.json"
+      end
     end
   end
 end
