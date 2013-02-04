@@ -1,4 +1,5 @@
 require "rulers/file_model"
+require "rack/request"
 require "erubis"
 
 module Rulers
@@ -23,6 +24,14 @@ module Rulers
       klass = self.class
       klass = klass.to_s.gsub(/Controller$/, "")
       Rulers.to_underscore(klass)
+    end
+
+    def request
+      @request ||= Rack::Request.new(@env)
+    end
+
+    def params
+      request.params
     end
   end
 end
