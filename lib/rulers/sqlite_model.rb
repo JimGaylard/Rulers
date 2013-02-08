@@ -1,7 +1,7 @@
 require 'sqlite3'
 require 'rulers/util'
 
-DB_CONN = SQLite3::Database.new "test.rb"
+DB_CONN = SQLite3::Database.new "test.db"
 
 module Rulers
   module Model
