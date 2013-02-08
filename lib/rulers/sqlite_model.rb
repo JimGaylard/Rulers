@@ -1,5 +1,6 @@
 require 'sqlite3'
 require 'rulers/util'
+require 'pry'
 
 DB_CONN = SQLite3::Database.new "test.db"
 
@@ -28,7 +29,9 @@ module Rulers
           values[key] ? to_sql(values[key]) : "null"
         end
 
-        DB.execute <<SQL
+        binding.pry
+
+        DB_CONN.execute <<SQL
 INSERT INTO #{table} (#{keys.join ","})
   VALUES (#{vals.join ","});
 SQL
