@@ -1,5 +1,6 @@
 require 'sqlite3'
 require 'rulers/util'
+require 'pry'
 
 DB_CONN = SQLite3::Database.new "test.db"
 
@@ -30,7 +31,7 @@ module Rulers
 
 
         DB_CONN.execute <<SQL
-  INSERT INTO #{table} (#{keys.join ","}) 
+  INSERT INTO #{table} (#{keys.join ","})
     VALUES (#{vals.join ","});
 SQL
         data = Hash[keys.zip vals]
@@ -39,10 +40,29 @@ SQL
         self.new data
       end
 
+      def self.find(id)
+        binding.pry
+        row = DB_CONN.execute <<SQL
+SELECT #{schema.keys.join(",")} FROM #{table}
+WHERE id = #{id};
+SQL
+        data = Hash[schema.keys.zip row[0]]
+        self.new data
+
+      end
+
       def self.count
         DB_CONN.execute(<<SQL)[0][0]
 SELECT COUNT (*) FROM #{table}
 SQL
+      end
+
+      def [](name)
+        @hash[name.to_s]
+      end
+
+      def []=(name, value)
+        @hash[name.to_s] = value
       end
 
       def self.table
