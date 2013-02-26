@@ -1,6 +1,5 @@
 require 'sqlite3'
 require 'rulers/util'
-require 'pry'
 
 DB_CONN = SQLite3::Database.new "test.db"
 
@@ -16,7 +15,7 @@ module Rulers
         when Numeric
           val.to_s
         when String
-          "#{val}"
+          "'#{val}'"
         else
           raise "Can't change #{val.class} to SQL!"
         end
@@ -29,15 +28,14 @@ module Rulers
           values[key] ? to_sql(values[key]) : "null"
         end
 
-        binding.pry
 
         DB_CONN.execute <<SQL
-INSERT INTO #{table} (#{keys.join ","})
-  VALUES (#{vals.join ","});
+  INSERT INTO #{table} (#{keys.join ","}) 
+    VALUES (#{vals.join ","});
 SQL
         data = Hash[keys.zip vals]
         sql = "SELECT last_insert_rowid();"
-        data["id"] = DB.execute(sql)[0][0]
+        data["id"] = DB_CONN.execute(sql)[0][0]
         self.new data
       end
 
