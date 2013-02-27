@@ -39,6 +39,28 @@ SQL
         self.new data
       end
 
+      def save!
+        unless @hash["id"]
+          self.class.create
+          true
+        end
+
+        fields = @hash.map do |k, v|
+          "#{k}=#{self.class.to_sql(v)}"
+        end.join ","
+
+        DB_CONN.execute <<SQL
+UPDATE #{self.class.table}
+SET #{fields}
+WHERE id = #{@hash["id"]}
+SQL
+        true
+      end
+
+      def save
+        self.save! rescue false
+      end
+
       def self.find(id)
         row = DB_CONN.execute <<SQL
 SELECT #{schema.keys.join(",")} FROM #{table}
