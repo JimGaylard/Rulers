@@ -1,6 +1,5 @@
 require 'sqlite3'
 require 'rulers/util'
-require 'pry'
 
 DB_CONN = SQLite3::Database.new "test.db"
 
@@ -41,7 +40,6 @@ SQL
       end
 
       def self.find(id)
-        binding.pry
         row = DB_CONN.execute <<SQL
 SELECT #{schema.keys.join(",")} FROM #{table}
 WHERE id = #{id};
