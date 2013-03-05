@@ -31,7 +31,44 @@ class RouteObject
     :dest => dest,
     :options => options,
  })
+
+  def check_url(url)
+    @rules.each do |r|
+      m = r[:regexp].match(url)
+
+      if m
+        options = r[:options]
+        params = options[:default].dup
+        r[:vars].each_with_index do |v, i|
+          params[v] = m.captures[i]
+        end
+        dest = nil
+        if r[:dest]
+          return get_dest(r[:dest], params)
+        else
+          controller = params["controller"]
+          action = params["action"]
+          return get_dest("#{controller}" +
+           "##{action}", params)
+        end
+      end
+    end
+
+    nil
+  end
+
+  def get_dest(dest, routing_params = {})
+    return dest if dest.respond_to?(:call)
+    if dest =~ /^([^#]+)#([^#]+)$/
+      name = $1.capitalize
+      cont = Object.const_get("#{name}Controller")
+      return cont.action($2, routing_params)
+    end
+    raise "No destination: #{dest.inspect}!"
+  end
+
 end
+
 
 #  def initialize
 #    @rules = []
@@ -40,8 +77,6 @@ end
 #  def match(url, *args)
 #  end
 
-#  def check_url(url)
-#  end
 #end
 
 module Rulers
