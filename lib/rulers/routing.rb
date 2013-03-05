@@ -1,36 +1,44 @@
 class RouteObject
-  options = {}
-  options = args.pop if args[-1].is_a?(Hash)
-  options[:default] ||= {}
 
-  dest = nil
-  dest = args.pop if args.size > 0
-  rails "TooManyArgs!" if args.size > 0
-
-  parts = url.split("/")
-  parts.select { |p| !p.empty? }
-
-  vars = []
-
-  regexp_parts = parts.map do |part|
-    if part[0] == ":"
-      vars << part[1..-1]
-      "([a-zA-Z0-9]+)"
-    elsif part[0] == "*"
-      vars << part[1..-1]
-      "(.*)"
-    else
-      part
-    end
+  def initialize
+    @rules = []
   end
 
-  regexp = regexp_parts.join("/")
-  @rules.push({
-    :regexp => Regexp.new("^/#{regexp}$"),
-    :vars => vars,
-    :dest => dest,
-    :options => options,
- })
+  def match(url, *args)
+    options = {}
+    options = args.pop if args[-1].is_a?(Hash)
+    options[:default] ||= {}
+
+    dest = nil
+    dest = args.pop if args.size > 0
+    rails "TooManyArgs!" if args.size > 0
+
+    parts = url.split("/")
+    parts.select { |p| !p.empty? }
+
+    vars = []
+    regexp_parts = parts.map do |part|
+      if part[0] == ":"
+        vars << part[1..-1]
+        "([a-zA-Z0-9]+)"
+      elsif part[0] == "*"
+        vars << part[1..-1]
+        "(.*)"
+      else
+        part
+      end
+    end
+
+    regexp = regexp_parts.join("/")
+
+    @rules.push({
+      :regexp => Regexp.new("^/#{regexp}$"),
+      :vars => vars,
+      :dest => dest,
+      :options => options,
+    })
+  end
+
 
   def check_url(url)
     @rules.each do |r|
@@ -69,13 +77,6 @@ class RouteObject
 
 end
 
-
-#  def initialize
-#    @rules = []
-#  end
-
-#  def match(url, *args)
-#  end
 
 #end
 
