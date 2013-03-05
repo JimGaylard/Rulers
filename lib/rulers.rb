@@ -17,14 +17,11 @@ module Rulers
       end
 
       klass, act = get_controller_and_action(env)
-      controller = klass.new(env)
-      text = controller.send(act)
-      if controller.get_response
-        status, headers, resp = controller.get_response.to_a
-        [status, headers, [resp.body].flatten]
-      else
-        [200, {'Content-Type' => 'text/html'}, [text]]
-      end
+      rack_app = klass.action(act)
+      rack_app.call(env)
+
+      #controller = klass.new(env)
+      #text = controller.send(act)
     end
   end
 end
