@@ -76,7 +76,6 @@ end
 module Rulers
   class Application
     def route(&block)
-      require 'pry'; binding.pry
       @route_obj ||= RouteObject.new
       @route_obj.instance_eval(&block)
     end
