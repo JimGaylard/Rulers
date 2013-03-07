@@ -1,3 +1,4 @@
+
 class RouteObject
 
   def initialize
@@ -77,8 +78,6 @@ class RouteObject
 
 end
 
-
-#end
 
 module Rulers
   class Application
