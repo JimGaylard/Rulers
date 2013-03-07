@@ -10,7 +10,6 @@ require "rulers/sqlite_model"
 module Rulers
   class Application
     def call(env)
-      `echo debug > debug.txt`;
 
       if env['PATH_INFO'] == '/favicon.ico'
         return [404, {'Content-Type' => 'text/html'}, []]
@@ -19,9 +18,6 @@ module Rulers
       klass, act = get_controller_and_action(env)
       rack_app = klass.action(act)
       rack_app.call(env)
-
-      #controller = klass.new(env)
-      #text = controller.send(act)
     end
   end
 end

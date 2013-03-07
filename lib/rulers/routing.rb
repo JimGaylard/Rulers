@@ -1,6 +1,4 @@
-
 class RouteObject
-
   def initialize
     @rules = []
   end
@@ -12,10 +10,10 @@ class RouteObject
 
     dest = nil
     dest = args.pop if args.size > 0
-    rails "TooManyArgs!" if args.size > 0
+    raise "Too many args!" if args.size > 0
 
     parts = url.split("/")
-    parts.select { |p| !p.empty? }
+    parts.select! { |p| !p.empty? }
 
     vars = []
     regexp_parts = parts.map do |part|
@@ -31,7 +29,6 @@ class RouteObject
     end
 
     regexp = regexp_parts.join("/")
-
     @rules.push({
       :regexp => Regexp.new("^/#{regexp}$"),
       :vars => vars,
@@ -39,7 +36,6 @@ class RouteObject
       :options => options,
     })
   end
-
 
   def check_url(url)
     @rules.each do |r|
@@ -58,7 +54,7 @@ class RouteObject
           controller = params["controller"]
           action = params["action"]
           return get_dest("#{controller}" +
-           "##{action}", params)
+            "##{action}", params)
         end
       end
     end
@@ -75,28 +71,28 @@ class RouteObject
     end
     raise "No destination: #{dest.inspect}!"
   end
-
 end
-
 
 module Rulers
   class Application
     def route(&block)
-      @route_object ||= RouteObject.new
-      @route_object.instance_eval(&block)
+      require 'pry'; binding.pry
+      @route_obj ||= RouteObject.new
+      @route_obj.instance_eval(&block)
     end
 
     def get_rack_app(env)
-      raise "NoRoutes!" unless @route_object
-      @route_object.check_url env["PATH_INFO"]
+      raise "No routes!" unless @route_obj
+      @route_obj.check_url env["PATH_INFO"]
     end
 
-    #def get_controller_and_action(env)
-    #  _, cont, action, after = env["PATH_INFO"].split('/',4)
-    #  cont = cont.capitalize
-    #  cont += "Controller"
+    def get_controller_and_action(env)
+      _, cont, action, after =
+        env["PATH_INFO"].split('/', 4)
+      cont = cont.capitalize # "People"
+      cont += "Controller" # "PeopleController"
 
-    #  [Object.const_get(cont), action]
-    #end
+      [Object.const_get(cont), action]
+    end
   end
 end
