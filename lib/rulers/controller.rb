@@ -19,6 +19,8 @@ module Rulers
       @request ||= Rack::Request.new(@env)
     end
 
+    # sends the action to the controller and
+    # returns Rack response
     def dispatch(action, routing_params = {})
       @routing_params  = routing_params
       text = self.send(action)
@@ -30,6 +32,7 @@ module Rulers
       end
     end
 
+    # wraps the controller/action in a proc for Rack
     def self.action(act, rp = {})
       proc { |env| self.new(env).dispatch(act, rp) }
     end
@@ -38,6 +41,8 @@ module Rulers
       request.params.merge @routing_params
     end
 
+    # checks if already responded and raises error
+    # returns @response - Rack::Response to 
     def response(text, status = 200, headers = {})
       raise "Already responded!" if @response
       a = [text].flatten
@@ -48,10 +53,15 @@ module Rulers
       @response
     end
 
+    # called by controller instances
+    # calls response on erubis result
     def render_response(*args)
       response(render(*args))
     end
 
+    # renders view name and passes in local variables
+    # to erubis
+    # returns erubis result
     def render(view_name, locals = {})
       filename = File.join "app", "views",
         controller_name, "#{view_name}.html.erb"
